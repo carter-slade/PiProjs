@@ -14,12 +14,12 @@ def getSock(ip_port):
 
 def sendTo(sock, message, key, ip_port):
     if str(key)=='':
-        message = message.decode('utf-8').encode('utf-8')
+        message = message.decode('latin-1').encode('latin-1')
         sock.sendto(message, ip_port)
         print("UDPComm:Message sent", message)
     else:
         encryptor = PKCS1_OAEP.new(key)
         encrypted = encryptor.encrypt(message)
-        encrypted = (encrypt_str+str(encrypted)).decode('utf-8').encode('utf-8')
+        encrypted = (encrypt_str+str(encrypted)).decode('latin-1').encode('latin-1')
         sock.sendto(encrypted, ip_port)
         print("UDPComm:Encrypted Message sent", encrypted)
