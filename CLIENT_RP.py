@@ -21,8 +21,8 @@ sock.bind((UDP_IP, UDP_PORT))
 
 while True:
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-    data = unicode(data, errors='ignore')
-    #data = data.decode("utf-8", 'ignore')
+    #data = unicode(data, errors='ignore')
+    data = data.decode("utf-8")
     print ("Received:",data)
     print ("Received from:", addr)
     if data=="Server:Handshake":
@@ -37,10 +37,11 @@ while True:
         break
 while True:
     msg, addr = sock.recvfrom(1024)
-    msg = unicode(msg, errors='ignore')
-    #msg = msg.decode('utf-8')
+    #msg = unicode(msg, errors='replace')
+    print("Received:Server"+msg)
+    msg = msg.decode('utf-8')
     msg = msg.replace(encrypt_str, '')
-    print ("Received:\nEncrypted message = "+str(msg))
+    #print ("Received:\nEncrypted message = "+str(msg))
     encrypted = msg
     decryptor = PKCS1_OAEP.new(private_key)
     decrypted = decryptor.decrypt(encrypted)
