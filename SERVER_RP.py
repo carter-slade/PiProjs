@@ -34,8 +34,8 @@ class ClientThread(threading.Thread):
         UDPComm.sendTo(sock, "Server:Handshake", "", (self.clientAddress, self.clientPort))
         while True:
             data = sock.recv(2048)
-            #data = data.decode('utf-8')
-            data = unicode(data, errors='ignore')
+            data = data.decode('utf-8')
+            #data = unicode(data, errors='ignore')
             msg = data.replace("\r\n", '') #remove new line character
             print ("Server:Message from client", msg)
             if msg=='Client:AckHandshake':
