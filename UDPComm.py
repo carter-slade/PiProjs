@@ -19,7 +19,7 @@ def sendTo(sock, message, key, ip_port):
         print("UDPComm:Message sent", message)
     else:
         encryptor = PKCS1_OAEP.new(key)
-        encrypted = encryptor.encrypt(message,32)
+        encrypted = encryptor.encrypt(message)
         encrypted = (encrypt_str+str(encrypted)).encode('latin-1')
         sock.sendto(encrypted, ip_port)
         print("UDPComm:Encrypted Message sent", encrypted)
