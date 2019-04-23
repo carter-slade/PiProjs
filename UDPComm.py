@@ -26,6 +26,6 @@ def sendTo(sock, message, key, ip_port):
         #encrypted = encryptor.encrypt(message)
         #encrypted = encrypted.decode('latin-1').encode('latin-1')
         #encrypted = (encrypt_str+str(encrypted)).encode('latin-1')
-        encrypted = RSA.encrypt_message(message , key)
-        sock.sendto(b'encrypted_message='+encrypted, ip_port)
+        encrypted = RSA.encrypt_message(message+encrypt_str , key)
+        sock.sendto(encrypted, ip_port)
         print("UDPComm:Encrypted Message sent", encrypted)

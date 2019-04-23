@@ -43,18 +43,17 @@ class ClientThread(threading.Thread):
                 UDPComm.sendTo(sock, "Server:OK", self.client_public_key, (self.clientAddress, self.clientPort))
                 break
         while True:
-            if encrypt_str in msg: #Reveive encrypted message and decrypt it.
-                msg = msg.replace(encrypt_str, '')
-                print ("Received:\nEncrypted message = "+str(msg))
-                #encrypted = msg
-                #decryptor = PKCS1_OAEP.new(private_key)
-                #decrypted = decryptor.decrypt(encrypted)
-                decrypted = RSA.decrypt_message(msg, private_key)
-                print ("Decrypted message = " + decrypted)
-                if decrypted=="Client:OK":
-                    print("Successfully exchanged keys")           
-            elif data == "Client:Terminate": 
-                break
+            msg = sock.recv(1024)
+            #msg = msg.replace(encrypt_str, '')
+            print ("Received:\nEncrypted message = "+str(msg))
+            #encrypted = msg
+            #decryptor = PKCS1_OAEP.new(private_key)
+            #decrypted = decryptor.decrypt(encrypted)
+            decrypted = RSA.decrypt_message(msg, private_key)
+            decrypted = decrypted.replace(encrypt_str, '')
+            print ("Decrypted message = " + decrypted)
+            if decrypted=="Client:OK":
+                print("Successfully exchanged keys")           
                 
         print ("Client at ", (self.clientAddress,self.clientPort) , " disconnected...")
 

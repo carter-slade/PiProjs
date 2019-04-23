@@ -39,13 +39,13 @@ while True:
     msg, addr = sock.recvfrom(1024)
     #msg = unicode(msg, errors='replace')
     print("Received:"+msg)
-    msg = base64.b64decode(msg)
-    msg = msg.replace(encrypt_str, '')
+    #msg = base64.b64decode(msg)
+    #msg = msg.replace(encrypt_str, '')
     #print ("Received:\nEncrypted message = "+str(msg))
     #decryptor = PKCS1_OAEP.new(private_key)
     #decrypted = decryptor.decrypt(encrypted)
     decrypted = RSA.decrypt_message(msg, private_key)
-
+    decrypted = decrypted.replace(encrypt_str, '')
     print ("Decrypted message = " + decrypted)
     if decrypted=="Server:OK":
         print("Succesfully exchanged keys")
