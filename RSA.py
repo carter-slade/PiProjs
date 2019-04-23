@@ -12,7 +12,7 @@ def generate_keys():
 
 def encrypt_message(a_message , publickey):
         publickey = PKCS1_OAEP.new(publickey)
-	encrypted_msg = publickey.encrypt(a_message, 32)[0]
+	encrypted_msg = publickey.encrypt(a_message)[0]
 	encoded_encrypted_msg = base64.b64encode(encrypted_msg) # base64 encoded strings are database friendly
 	return encoded_encrypted_msg
 
