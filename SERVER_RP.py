@@ -7,18 +7,10 @@ Created on Tue Apr  2 10:29:46 2019
 
 import os, time
 import re
-import threading, UDPComm
-from Crypto.PublicKey import RSA
-from Crypto import Random
-from Crypto.Cipher import PKCS1_OAEP
+import threading, UDPComm, RSA, base64
 
-
-#Generate private and public keys
-random_generator = Random.new().read
-private_key = RSA.generate(1024, random_generator)
-public_key = private_key.publickey()
+private_key , public_key = RSA.generate_keys()
 encrypt_str = "encrypted_message="
-client_public_key=""
 
 #arr = array.array('
 class ClientThread(threading.Thread):
@@ -26,6 +18,7 @@ class ClientThread(threading.Thread):
         threading.Thread.__init__(self)
         self.clientAddress=clientAddress
         self.clientPort = clientPort
+        self.client_public_key=""
         print ("New connection added: ", (clientAddress, clientPort))
     def run(self):
         sock = UDPComm.getSock((self.clientAddress, self.clientPort))
@@ -34,7 +27,7 @@ class ClientThread(threading.Thread):
         UDPComm.sendTo(sock, "Server:Handshake", "", (self.clientAddress, self.clientPort))
         while True:
             data = sock.recv(2048)
-            data = data.decode('latin-1')
+            data = base64.b64decode(data)
             #data = unicode(data, errors='ignore')
             msg = data.replace("\r\n", '') #remove new line character
             print ("Server:Message from client", msg)
@@ -44,17 +37,18 @@ class ClientThread(threading.Thread):
             elif encrypt_str in msg: #Reveive encrypted message and decrypt it.
                 msg = msg.replace(encrypt_str, '')
                 print ("Received:\nEncrypted message = "+str(msg))
-                encrypted = msg
-                decryptor = PKCS1_OAEP.new(private_key)
-                decrypted = decryptor.decrypt(encrypted)
+                #encrypted = msg
+                #decryptor = PKCS1_OAEP.new(private_key)
+                #decrypted = decryptor.decrypt(encrypted)
+                decrypted = RSA.decrypt_message(msg, private_key)
                 print ("Decrypted message = " + decrypted)
                 if decrypted=="Client:OK":
                     print("Successfully exchanged keys")
             elif "Client:PublicKey" in msg:
                 msg = msg.replace("Client:PublicKey", '')
                 msg=msg.replace("\r\n", '')
-                client_public_key = RSA.importKey(msg)
-                UDPComm.sendTo(sock, "Server:OK", client_public_key, (self.clientAddress, self.clientPort))
+                self.client_public_key = RSA.importKey(msg)
+                UDPComm.sendTo(sock, "Server:OK", self.client_public_key, (self.clientAddress, self.clientPort))
             
             elif data == "Client:Terminate": 
                 break

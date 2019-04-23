@@ -1,7 +1,8 @@
 import socket
 import sys  
+import RSA
+import base64
 
-from Crypto.Cipher import PKCS1_OAEP
 encrypt_str = "encrypted_message="
 
 def getSock(ip_port):    
@@ -14,13 +15,14 @@ def getSock(ip_port):
 
 def sendTo(sock, message, key, ip_port):
     if str(key)=='':
-        message = message.encode('latin-1')
+        message = base64.b64encode(message)
         sock.sendto(message, ip_port)
         print("UDPComm:Message sent", message)
     else:
-        encryptor = PKCS1_OAEP.new(key)
-        encrypted = encryptor.encrypt(message)
-        encrypted = encrypted.decode('latin-1').encode('latin-1')
-        encrypted = (encrypt_str+str(encrypted)).encode('latin-1')
-        sock.sendto(encrypted, ip_port)
+        #encryptor = PKCS1_OAEP.new(key)
+        #encrypted = encryptor.encrypt(message)
+        #encrypted = encrypted.decode('latin-1').encode('latin-1')
+        #encrypted = (encrypt_str+str(encrypted)).encode('latin-1')
+        encrypted = RSA.encrypt_message(message , key)
+        sock.sendto(b'encrypted_message='+encrypted, ip_port)
         print("UDPComm:Encrypted Message sent", encrypted)
