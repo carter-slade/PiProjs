@@ -26,15 +26,24 @@ class ClientThread(threading.Thread):
         #self.csocket.send(bytes("Hi, This is from Server..",'utf-8'))
         UDPComm.sendTo(sock, "Server:Handshake", "", (self.clientAddress, self.clientPort))
         while True:
-            data = sock.recv(2048)
+            data = sock.recv(1024)
             data = base64.b64decode(data)
             #data = unicode(data, errors='ignore')
-            msg = data.replace("\r\n", '') #remove new line character
+            msg = data
             print ("Server:Message from client", msg)
             if msg=='Client:AckHandshake':
-                UDPComm.sendTo(sock, "Server:PublicKey"+str(public_key.exportKey())+"\n", "", (self.clientAddress, self.clientPort))
+                UDPComm.sendTo(sock, public_key.exportKey(), "key", (self.clientAddress, self.clientPort))
                 print ("Server:Public key sent to client.")
-            elif encrypt_str in msg: #Reveive encrypted message and decrypt it.
+                break
+        while True:
+            data = sock.recv(1024)
+            if len(data)>0:
+                self.client_public_key = RSA.importKey(data)
+                print("Client public key received")
+                UDPComm.sendTo(sock, "Server:OK", self.client_public_key, (self.clientAddress, self.clientPort))
+                break
+        while True:
+            if encrypt_str in msg: #Reveive encrypted message and decrypt it.
                 msg = msg.replace(encrypt_str, '')
                 print ("Received:\nEncrypted message = "+str(msg))
                 #encrypted = msg
@@ -43,13 +52,7 @@ class ClientThread(threading.Thread):
                 decrypted = RSA.decrypt_message(msg, private_key)
                 print ("Decrypted message = " + decrypted)
                 if decrypted=="Client:OK":
-                    print("Successfully exchanged keys")
-            elif "Client:PublicKey" in msg:
-                msg = msg.replace("Client:PublicKey", '')
-                msg=msg.replace("\r\n", '')
-                self.client_public_key = RSA.importKey(msg)
-                UDPComm.sendTo(sock, "Server:OK", self.client_public_key, (self.clientAddress, self.clientPort))
-            
+                    print("Successfully exchanged keys")           
             elif data == "Client:Terminate": 
                 break
                 

@@ -18,3 +18,5 @@ def decrypt_message(encoded_encrypted_msg, privatekey):
 	decoded_encrypted_msg = base64.b64decode(encoded_encrypted_msg)
 	decoded_decrypted_msg = privatekey.decrypt(decoded_encrypted_msg)
 	return decoded_decrypted_msg
+def importKey(key):
+        return RSA.importKey(key)

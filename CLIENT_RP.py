@@ -24,17 +24,21 @@ while True:
     if data=="Server:Handshake":
         message = "Client:AckHandshake"
         UDPComm.sendTo(sock, message, "", addr)
-    elif  "Server:PublicKey" in data:
-        data = data.replace("Server:PublicKey", '')
-        data=data.replace("\r\n", '')
+        break
+while True:
+    data, addr = sock.recvfrom(1024)
+    if len(data)>0:
+        #data = data.replace("Server:PublicKey", '')
+        #data=data.replace("\r\n", '')
+        print("Server pubic key received!")
         server_public_key = RSA.importKey(data)
-        message = "Client:PublicKey"+str(public_key.exportKey())
-        UDPComm.sendTo(sock, message, "", addr)
+        message = public_key.exportKey()
+        UDPComm.sendTo(sock, message, "key", addr)
         break
 while True:
     msg, addr = sock.recvfrom(1024)
     #msg = unicode(msg, errors='replace')
-    print("Received:Server"+msg)
+    print("Received:"+msg)
     msg = base64.b64decode(msg)
     msg = msg.replace(encrypt_str, '')
     #print ("Received:\nEncrypted message = "+str(msg))

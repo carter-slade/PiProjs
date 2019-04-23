@@ -18,6 +18,9 @@ def sendTo(sock, message, key, ip_port):
         message = base64.b64encode(message)
         sock.sendto(message, ip_port)
         print("UDPComm:Message sent", message)
+    elif str(key)=='key':
+        sock.sendto(message, ip_port)
+        print("UDPComm:Key sent", message)
     else:
         #encryptor = PKCS1_OAEP.new(key)
         #encrypted = encryptor.encrypt(message)
