@@ -11,6 +11,7 @@ import threading, UDPComm, RSA, base64
 
 private_key , public_key = RSA.generate_keys()
 encrypt_str = "encrypted_message="
+iplist=['10.42.0.90','10.42.0.91']
 
 #arr = array.array('
 class ClientThread(threading.Thread):
@@ -59,12 +60,20 @@ class ClientThread(threading.Thread):
 
 
 def getIPs():    
+    global iplist
     myCmd = os.popen('./show_client.sh').read()
     IPs = myCmd.split()
     r = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
     IPs = (filter(r.match, IPs))
-    print("Current IPs:", IPs)
-    return set(IPs)
+    print("Connected IPs:", IPs)
+    a = set(IPs)
+    b = set(iplist)
+    c = a & b
+    if c:
+        print("Valid IPs", c)
+    else:
+        print("No valid IPs detected")
+    return c
     
 def getNeighbours():
     global new_list, old_list, hello, byebye
