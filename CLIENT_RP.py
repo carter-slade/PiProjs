@@ -1,7 +1,7 @@
 import socket
 import UDPComm
 from Crypto import Random
-from Cryptodome.PublicKey import RSA
+from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 
 UDP_IP = '0.0.0.0'

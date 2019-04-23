@@ -8,9 +8,9 @@ Created on Tue Apr  2 10:29:46 2019
 import os, time
 import re
 import threading, UDPComm
-from Cryptodome.PublicKey import RSA
+from Crypto.PublicKey import RSA
 from Crypto import Random
-from Cryptodome.Cipher import PKCS1_OAEP
+from Crypto.Cipher import PKCS1_OAEP
 
 
 #Generate private and public keys
